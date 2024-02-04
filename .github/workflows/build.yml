@@ -1,0 +1,42 @@
+name: build
+
+on:
+  workflow_call:
+    inputs:
+      latest:
+        description: "If the container should be tagged as latest."
+        type: boolean
+        required: false
+        default: false
+      push:
+        description: "If the built container should be pushed."
+        type: boolean
+        required: false
+        default: false
+
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Login to Github Container Registry
+        if: ${{ inputs.push }}
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: ${{ inputs.push }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            ${{ inputs.latest && 'ghcr.io/gdwr/chaoss:latest' || '' }}
+          labels: ${{ steps.meta.outputs.labels }}

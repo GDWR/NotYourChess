@@ -1,0 +1,8 @@
+services:
+  chaoss:
+    image: "ghcr.io/gdwr/chaoss:latest"
+    environment:
+      SUPABASE_URL: ""
+      SUPABASE_KEY: ""
+    ports:
+      - "3000:3000"

@@ -1,4 +1,10 @@
-# Nuxt 3 Minimal Starter
+# Chaoss
+
+Play chess in weird ways.
+
+> [!WARNING]  
+> Repository/project is under construction. I would recommend waiting if you wish to contribute due to the 
+> possibility of disruptive changes.
 
 Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
 

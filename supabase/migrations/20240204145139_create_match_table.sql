@@ -1,0 +1,6 @@
+CREATE TABLE match (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    board VARCHAR(255) DEFAULT 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR' NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT true,
+    moves TEXT ARRAY NOT NULL DEFAULT ARRAY[]::TEXT[]
+);

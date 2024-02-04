@@ -11,6 +11,7 @@
   },
   "devDependencies": {
     "nuxt": "^3.10.0",
+    "supabase": "^1.136.3",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"
   },

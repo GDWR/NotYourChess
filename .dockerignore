@@ -1,0 +1,11 @@
+*
+
+!components
+!layouts
+!pages
+!public
+!server
+!package.json
+!nuxt.config.ts
+!yarn.lock
+!tsconfig.json

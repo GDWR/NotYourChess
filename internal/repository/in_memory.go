@@ -15,7 +15,7 @@ func NewInMemoryMatchRepository() InMemoryMatchRepository {
 	return InMemoryMatchRepository{}
 }
 
-func (r InMemoryMatchRepository) RandomMatch() (*schemas.Match, error) {
+func (r *InMemoryMatchRepository) RandomMatch() (*schemas.Match, error) {
 	if len(r.matches) == 0 {
 		return nil, errors.New("no matches")
 	}
@@ -24,7 +24,7 @@ func (r InMemoryMatchRepository) RandomMatch() (*schemas.Match, error) {
 	return &r.matches[index], nil
 }
 
-func (r InMemoryMatchRepository) NewMatch() *schemas.Match {
+func (r *InMemoryMatchRepository) NewMatch() *schemas.Match {
 	newMatch := schemas.Match{
 		Id:    schemas.NewGuid(),
 		Board: schemas.NewBoard(),
@@ -33,4 +33,14 @@ func (r InMemoryMatchRepository) NewMatch() *schemas.Match {
 
 	r.matches = append(r.matches, newMatch)
 	return &newMatch
+}
+
+func (r *InMemoryMatchRepository) GetMatch(id schemas.Guid) (*schemas.Match, error) {
+	for _, match := range r.matches {
+		if match.Id == id {
+			return &match, nil
+		}
+	}
+
+	return nil, errors.New("match not found")
 }

@@ -54,6 +54,31 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(content)
 	})
+
+	mux.HandleFunc("GET /match/{guid}", func(w http.ResponseWriter, r *http.Request) {
+		guid, err := schemas.ParseGuid(r.PathValue("guid"))
+		if err != nil {
+			http.Error(w, "Invalid GUID", http.StatusBadRequest)
+			return
+		}
+
+		match, err := matchRepository.GetMatch(guid)
+		if err != nil {
+			http.Error(w, "Match not found", http.StatusNotFound)
+			return
+		}
+
+		content, err := json.Marshal(match)
+		if err != nil {
+			log.Printf("%s", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(content)
+	})
+
 	wrappedMux := middleware.NewLogger(mux)
 	log.Printf("Listening on :8080")
 	log.Fatal(http.ListenAndServe(":8080", wrappedMux))

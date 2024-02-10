@@ -1,0 +1,90 @@
+openapi: "3.0.0"
+info:
+  title: "Chaoss"
+  version: "0.0.1"
+servers:
+  - url: "https://chaoss.gdwr.me/api"
+
+paths:
+  /match:
+    get:
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/Match"
+                  - type: object
+                    properties:
+                      token:
+                        $ref: "#/components/schemas/Token"
+  /match/{id}:
+    get:
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/Guid"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Match"
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json;command=move:
+            schema:
+              type: object
+              properties:
+                move:
+                  $ref: "#/components/schemas/Move"
+                token:
+                  $ref: "#/components/schemas/Token"
+      responses:
+        "202":
+          description: Accepted
+        "400":
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+components:
+  schemas:
+    Guid: 
+      type: string
+      example: "259b74bf-cd70-45ad-b199-55d3e76dbdee"
+    Board:
+      type: string
+      example: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    Move:
+      type: string
+      example: "e2e4"
+    Token:
+      type: string
+      example: "259b74bf-cd70-45ad-b199-55d3e76dbdee"
+    Match:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/Guid"
+        board:
+          $ref: "#/components/schemas/Board"
+        moves:
+          type: array
+          items:
+            $ref: "#/components/schemas/Move"
+    Error:
+      type: object
+      properties:
+        detail:
+          type: string
+          example: "Invalid move"

@@ -2,7 +2,10 @@ package main
 
 import (
 	_ "embed"
+	"log"
 	"net/http"
+
+	"github.com/gdwr/chaoss/internal/middleware"
 )
 
 //go:embed docs/openapi.yml
@@ -20,5 +23,6 @@ func main() {
 		w.Write([]byte("OK"))
 	})
 
-	http.ListenAndServe(":8080", mux)
+	wrappedMux := middleware.NewLogger(mux)
+	log.Fatal(http.ListenAndServe(":8080", wrappedMux))
 }

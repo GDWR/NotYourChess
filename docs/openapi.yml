@@ -19,7 +19,7 @@ paths:
                   - type: object
                     properties:
                       token:
-                        $ref: "#/components/schemas/Token"
+                        $ref: "#/components/schemas/Guid"
   /match/{id}:
     get:
       parameters:
@@ -46,7 +46,7 @@ paths:
                 move:
                   $ref: "#/components/schemas/Move"
                 token:
-                  $ref: "#/components/schemas/Token"
+                  $ref: "#/components/schemas/Guid"
       responses:
         "202":
           description: Accepted
@@ -68,9 +68,6 @@ components:
     Move:
       type: string
       example: "e2e4"
-    Token:
-      type: string
-      example: "259b74bf-cd70-45ad-b199-55d3e76dbdee"
     Match:
       type: object
       properties:

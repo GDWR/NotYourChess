@@ -1,5 +1,24 @@
 package main
 
+import (
+	_ "embed"
+	"net/http"
+)
+
+//go:embed docs/openapi.yml
+var openapi string
+
 func main() {
-	println("Hello World")
+	mux := http.NewServeMux()
+	mux.HandleFunc("GET /openapi.yml", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Content-Type", "application/yml")
+		w.Write([]byte(openapi))
+	})
+	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
+
+	http.ListenAndServe(":8080", mux)
 }

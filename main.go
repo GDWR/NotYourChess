@@ -49,6 +49,10 @@ func main() {
 			return
 		}
 
+		http.SetCookie(w, &http.Cookie{
+			Name:  "matchSession",
+			Value: response.Token,
+		})
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(content)
 	})

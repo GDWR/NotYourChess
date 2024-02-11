@@ -22,7 +22,6 @@ type GetMatchResponse struct {
 func main() {
 	matchRepository := repository.NewInMemoryMatchRepository()
 	mux := http.NewServeMux()
-
 	mux.HandleFunc("GET /openapi.yml", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/yml")
@@ -32,7 +31,6 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
-
 	mux.HandleFunc("GET /match", func(w http.ResponseWriter, r *http.Request) {
 		match, err := matchRepository.RandomMatch()
 		if err != nil {
@@ -54,14 +52,8 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(content)
 	})
-
 	mux.HandleFunc("GET /match/{guid}", func(w http.ResponseWriter, r *http.Request) {
-		guid, err := schemas.ParseGuid(r.PathValue("guid"))
-		if err != nil {
-			http.Error(w, "Invalid GUID", http.StatusBadRequest)
-			return
-		}
-
+		guid := r.PathValue("guid")
 		match, err := matchRepository.GetMatch(guid)
 		if err != nil {
 			http.Error(w, "Match not found", http.StatusNotFound)

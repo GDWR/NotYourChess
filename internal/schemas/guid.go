@@ -33,7 +33,3 @@ func NewGuid() Guid {
 
 	return fmt.Sprintf("%s-%s-%s-%s-%s%s", timeLow, timeMid, timeHiAndVersion, clockSeqHiAndReserved, clockSeqLow, node)
 }
-
-func ParseGuid(s string) (Guid, error) {
-	return NewGuid(), nil
-}

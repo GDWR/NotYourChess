@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "embed"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -11,21 +10,22 @@ import (
 	"github.com/gdwr/chaoss/internal/schemas"
 )
 
-//go:embed docs/openapi.yml
-var openapi string
-
 type GetMatchResponse struct {
 	*schemas.Match
 	Token schemas.Guid `json:"token"`
 }
 
 func main() {
+	logger := log.New(log.Writer(), "chaoss: ", log.Ltime|log.LUTC|log.Lmsgprefix)
 	matchRepository := repository.NewInMemoryMatchRepository()
 	mux := http.NewServeMux()
+	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "website/index.html")
+	})
 	mux.HandleFunc("GET /openapi.yml", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Content-Type", "application/yml")
-		w.Write([]byte(openapi))
+		http.ServeFile(w, r, "docs/openapi.yml")
 	})
 	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -71,7 +71,7 @@ func main() {
 		w.Write(content)
 	})
 
-	wrappedMux := middleware.NewLogger(mux)
-	log.Printf("Listening on :8080")
-	log.Fatal(http.ListenAndServe(":8080", wrappedMux))
+	wrappedMux := middleware.NewLogger(logger, mux)
+	logger.Printf("Listening on :8080")
+	logger.Fatal(http.ListenAndServe(":8080", wrappedMux))
 }

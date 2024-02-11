@@ -20,9 +20,9 @@ func (l *Logger) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 // NewLogger constructs a new Logger middleware handler
-func NewLogger(handlerToWrap http.Handler) *Logger {
+func NewLogger(logger *log.Logger, handlerToWrap http.Handler) *Logger {
 	return &Logger{
 		handler: handlerToWrap,
-		logger:  log.New(log.Writer(), "http: ", log.Ltime|log.LUTC|log.Lmsgprefix),
+		logger:  logger,
 	}
 }

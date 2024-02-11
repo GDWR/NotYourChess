@@ -23,5 +23,8 @@ go.work
 # Debug files
 __debug*
 
-# Jetbrains
+# Jetbrains files
 .idea/
+
+# pnpm files 
+.pnpm-store

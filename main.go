@@ -1,9 +1,11 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
 	"log"
 	"net/http"
+	"path"
 
 	"github.com/gdwr/chaoss/internal/middleware"
 	"github.com/gdwr/chaoss/internal/repository"
@@ -15,12 +17,42 @@ type GetMatchResponse struct {
 	Token schemas.Guid `json:"token"`
 }
 
+//go:embed website/dist/*
+var website embed.FS
+
 func main() {
 	logger := log.New(log.Writer(), "chaoss: ", log.Ltime|log.LUTC|log.Lmsgprefix)
 	matchRepository := repository.NewInMemoryMatchRepository()
 	mux := http.NewServeMux()
+
 	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		http.ServeFile(w, r, "website/index.html")
+		// Serve content from embed website
+		file := path.Clean(r.URL.Path)
+		if file == "/" {
+			file = "/index.html"
+		}
+
+		content, err := website.ReadFile("website/dist" + file)
+		if err != nil {
+			http.Error(w, "Not Found", http.StatusNotFound)
+			return
+		}
+
+		// Determine content type by file extension
+		contentType := "text/plain"
+		switch path.Ext(file) {
+		case ".html":
+			contentType = "text/html"
+		case ".css":
+			contentType = "text/css"
+		case ".js":
+			contentType = "application/javascript"
+		case ".svg":
+			contentType = "image/svg+xml"
+		}
+
+		w.Header().Set("Content-Type", contentType)
+		w.Write(content)
 	})
 	mux.HandleFunc("GET /openapi.yml", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
@@ -31,7 +63,7 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte("OK"))
 	})
-	mux.HandleFunc("GET /match", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /api/match", func(w http.ResponseWriter, r *http.Request) {
 		match, err := matchRepository.RandomMatch()
 		if err != nil {
 			match = matchRepository.NewMatch()
@@ -56,7 +88,7 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(content)
 	})
-	mux.HandleFunc("GET /match/{guid}", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("GET /api/match/{guid}", func(w http.ResponseWriter, r *http.Request) {
 		guid := r.PathValue("guid")
 		match, err := matchRepository.GetMatch(guid)
 		if err != nil {

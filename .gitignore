@@ -22,3 +22,6 @@ go.work
 
 # Debug files
 __debug*
+
+# Jetbrains
+.idea/
